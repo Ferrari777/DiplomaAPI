@@ -11,7 +11,6 @@ Steps for creating database locally:
 5. In VS Studio under "Tools" - "NuGET" open "Package Manager Console".
 6. Use existing migration files for creating database: 
 ```
-Add-Migration FixBugInContext
 Update-Database
 ```
 7. Open SQL Server Object Explorer and refresh your SQL Server. Then check that new database with tables Users and DocFiles were added.
