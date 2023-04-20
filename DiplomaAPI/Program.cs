@@ -1,5 +1,6 @@
 using DiplomaAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<UserDbContext>(
     o => o.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"))
     );
+builder.Services.AddControllers().AddJsonOptions(x =>
+                                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 var app = builder.Build();
 

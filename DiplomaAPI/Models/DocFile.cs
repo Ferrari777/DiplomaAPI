@@ -4,19 +4,19 @@ namespace DiplomaAPI.Models
 {
     public class DocFile
     {
-        
         public int Id { get; set; }
 
         [Required]
         public string? Name { get; set; }
 
         [Required]
-        public string? Author { get; set; }
+        public string? Path { get; set; }
 
-        // Property of the chemical substance name
-        // that can be described in the documentary file
-        public string? ChemSubstanceName { get; set; }
+        public int UserId { get; set; }
+        public User? User { get; set; }
 
-        public DateTime Created { get; set; }
+        public Agreed? Agreed { get; set; }
+
+        public Approved? Approved { get; set; }
     }
 }

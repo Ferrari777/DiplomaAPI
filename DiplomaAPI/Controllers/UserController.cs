@@ -39,7 +39,8 @@ namespace DiplomaAPI.Controllers
         // POST: api/User
         // Creates a user record in the database
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(User), StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(User), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create(User user)
         {
             await _context.Users.AddAsync(user);

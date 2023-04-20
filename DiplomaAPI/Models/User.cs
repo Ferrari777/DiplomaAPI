@@ -1,10 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DiplomaAPI.Models
 {
     public class User
     {
-
         public int Id { get; set; }
 
         [Required]
@@ -16,6 +17,13 @@ namespace DiplomaAPI.Models
         [Required]
         public string? Email { get; set; }
 
-        public DateTime Registered { get; set; }
+        public DateTime CreatedDatetime { get; set; }
+
+        public DateTime UpdatedDatetime { get; set; }
+
+        public int UserRoleId { get; set; }
+        public UserRole? UserRole { get; set; }
+
+        public ICollection<DocFile>? DocFiles { get; set; }
     }
 }
