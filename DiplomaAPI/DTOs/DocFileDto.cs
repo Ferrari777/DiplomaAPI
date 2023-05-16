@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DiplomaAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace DiplomaAPI.Models
+namespace DiplomaAPI.DTOs
 {
-    public class DocFile
+    public class DocFileDto
     {
         public int Id { get; set; }
 
@@ -23,7 +24,6 @@ namespace DiplomaAPI.Models
         public long? FileSize { get; set; }
 
         public int UserId { get; set; }
-        public User? User { get; set; }
 
         public Agreed? Agreed { get; set; }
 

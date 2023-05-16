@@ -1,32 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Writers;
 using System.ComponentModel.DataAnnotations;
 
 namespace DiplomaAPI.Models
 {
-    public class DocFile
+    public class Document
     {
         public int Id { get; set; }
-
+        
         [Required]
         [MaxLength(500)]
         [Unicode(true)]
-        public string? Name { get; set; }
-
-        //[Required]
-        //public string? Path { get; set; }
-
+        public string? DocumentName { get; set; }
+        
         [Required]
         [MaxLength(100)]
         [Unicode(false)]
         public string? ContentType { get; set; }
 
         public long? FileSize { get; set; }
-
-        public int UserId { get; set; }
-        public User? User { get; set; }
-
-        public Agreed? Agreed { get; set; }
-
-        public Approved? Approved { get; set; }
     }
 }

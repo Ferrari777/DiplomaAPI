@@ -15,6 +15,7 @@ builder.Services.AddDbContext<UserDbContext>(
     );
 builder.Services.AddControllers().AddJsonOptions(x =>
                                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 

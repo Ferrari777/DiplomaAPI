@@ -19,6 +19,8 @@ namespace DiplomaAPI.Data
         public DbSet<Agreed> Agreed { get; set; }
         //Representation of DB to manipulate data from table Approved
         public DbSet<Approved> Approved { get; set; }
+        //Representation of DB to manipulate data from table Document
+        public DbSet<Document> Documents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,4 +1,6 @@
-﻿using DiplomaAPI.Data;
+﻿using AutoMapper;
+using DiplomaAPI.Data;
+using DiplomaAPI.DTOs;
 using DiplomaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +12,12 @@ namespace DiplomaAPI.Controllers
     public class ApprovedController : ControllerBase
     {
         private readonly UserDbContext _context;
+        private readonly IMapper _mapper;
 
-        public ApprovedController(UserDbContext context)
+        public ApprovedController(UserDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Approved
@@ -21,31 +25,40 @@ namespace DiplomaAPI.Controllers
         [HttpGet]
         public async Task<IEnumerable<Approved>> Get()
         {
-            return await _context.Approved.ToListAsync();
+            var approvedList = await _context.Approved
+                .Include(p => p.DocFile)
+                .ToListAsync();
+            return approvedList;
         }
 
         // GET: api/Approved/1
         // Returns specific approved detail for file with given Id
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Approved), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(Approved), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
         {
-            var approvedInfo = await _context.Approved.FindAsync(id);
+            var approvedInfo = await _context.Approved
+                .Include(p => p.DocFile)
+                .Where(p => p.Id == id)
+                .FirstOrDefaultAsync();
+            
             return approvedInfo == null ? NotFound() : Ok(approvedInfo);
         }
 
         // POST: api/Approved
         // Creates a record of approved detail for file in the database
         [HttpPost]
-        [ProducesResponseType(typeof(Approved), StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(Approved), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create(Approved approvedInfo)
+        [ProducesResponseType(typeof(Approved), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Create(ApprovedDto approvedDtoPayload)
         {
-            await _context.Approved.AddAsync(approvedInfo);
+            var newApprovedInfo = _mapper.Map<Approved>(approvedDtoPayload);
+            
+            await _context.Approved.AddAsync(newApprovedInfo);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = approvedInfo.Id }, approvedInfo);
+            return CreatedAtAction(nameof(GetById), new { id = newApprovedInfo.Id }, newApprovedInfo);
         }
 
         // PUT: /api/Approved
@@ -53,12 +66,13 @@ namespace DiplomaAPI.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(int id, Approved approvedInfo)
+        public async Task<IActionResult> Update(int id, ApprovedDto approvedDtoPayload)
         {
-            if (id != approvedInfo.Id)
+            var updatedApprovedInfo = _mapper.Map<Approved>(approvedDtoPayload);
+            if (id != updatedApprovedInfo.Id)
                 return BadRequest();
 
-            _context.Entry(approvedInfo).State = EntityState.Modified;
+            _context.Entry(updatedApprovedInfo).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return NoContent();

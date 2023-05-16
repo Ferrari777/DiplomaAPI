@@ -1,4 +1,6 @@
-﻿using DiplomaAPI.Data;
+﻿using AutoMapper;
+using DiplomaAPI.Data;
+using DiplomaAPI.DTOs;
 using DiplomaAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,42 +12,55 @@ namespace DiplomaAPI.Controllers
     public class UserRoleController : ControllerBase
     {
         private readonly UserDbContext _context;
-        
-        public UserRoleController(UserDbContext context)
+        private readonly IMapper _mapper;
+
+        public UserRoleController(UserDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/UserRole
         // Returns list of all user roles
         [HttpGet]
-        public async Task<IEnumerable<UserRole>> Get()
+        public async Task<IEnumerable<UserRoleDto>> Get()
         {
-            return await _context.UserRoles.ToListAsync();
+            var userRoleList = await _context.UserRoles.ToListAsync();
+            var userRoleListDto = _mapper.Map<IEnumerable<UserRoleDto>>(userRoleList);
+
+            return userRoleListDto;
         }
 
         // GET: api/UserRole/1
         // Returns specific user role with given Id
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(UserRole), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(UserRole), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetById(int id)
         {
             var userRole = await _context.UserRoles.FindAsync(id);
-            return userRole == null ? NotFound() : Ok(userRole);
+            if (userRole == null) 
+            {
+                NotFound();
+            }
+            var userRoleDto = _mapper.Map<UserRoleDto>(userRole);
+
+            return Ok(userRoleDto);
         }
 
         // POST: api/UserRole
         // Creates a user role record in the database
         [HttpPost]
-        [ProducesResponseType(typeof(UserRole), StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(UserRole), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create(UserRole userRole)
+        [ProducesResponseType(typeof(UserRole), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Create(UserRoleDto userRoleDtoPayload)
         {
-            await _context.UserRoles.AddAsync(userRole);
+            var newUserRole = _mapper.Map<UserRole>(userRoleDtoPayload);
+
+            await _context.UserRoles.AddAsync(newUserRole);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = userRole.Id }, userRole);
+            return CreatedAtAction(nameof(GetById), new { id = newUserRole.Id }, newUserRole);
         }
 
         // PUT: /api/UserRole
@@ -53,12 +68,13 @@ namespace DiplomaAPI.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(int id, UserRole userRole)
+        public async Task<IActionResult> Update(int id, UserRoleDto userRoleDtoPayload)
         {
-            if (id != userRole.Id)
+            var updatedUserRole = _mapper.Map<UserRole>(userRoleDtoPayload);
+            if (id != updatedUserRole.Id)
                 return BadRequest();
 
-            _context.Entry(userRole).State = EntityState.Modified;
+            _context.Entry(updatedUserRole).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -71,7 +87,8 @@ namespace DiplomaAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete(int id)
         {
-            var userRoleToDelete = await _context.UserRoles.FindAsync(id);
+            var userRoleToDelete = await _context.UserRoles
+                .FindAsync(id);
             if (userRoleToDelete == null)
                 return NotFound();
 
