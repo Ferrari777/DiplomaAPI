@@ -14,7 +14,8 @@ namespace DiplomaAPI.Models
         public string? Author { get; set; }
 
         // Property of the chemical substance name
-        // that can be described in the documentary file
+        // that can be described in the documentation file
+        [Required]
         public string? ChemSubstanceName { get; set; }
 
         public DateTime Created { get; set; }

@@ -14,9 +14,9 @@ namespace DiplomaAPI.Data
         //Representation of DB to manipulate data from table DocFile
         public DbSet<DocFile> DocFiles { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<DocFile>();
-        }
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    modelBuilder.Entity<DocFile>();
+        //}
     }
 }
